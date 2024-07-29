@@ -108,6 +108,8 @@ export function BlogSeo(props: BlogSeoProps) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData, null, 2) }}
         />
+      <script defer src="https://cloud.umami.is/script.js" data-website-id="f677dc69-42e6-4f98-ad8d-cd90bbcd27f4"></script>
+
       </Head>
     </>
   )

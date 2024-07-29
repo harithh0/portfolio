@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { globby } from 'globby'
 
-let SITE_URL = 'https://www.leohuynh.dev'
+let SITE_URL = 'https://harithh.site'
 
 ;(async () => {
   console.log('Generating sitemap...')

@@ -1,7 +1,7 @@
 import type { siteMetadata } from '~/data/siteMetadata'
 
 export interface Project {
-  type: 'work' | 'self'
+  type: 'software' | 'cyber'
   title: string
   description?: string
   imgSrc: string

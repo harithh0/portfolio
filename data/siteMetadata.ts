@@ -1,17 +1,17 @@
 export let siteMetadata = {
-  siteUrl: 'https://www.leohuynh.dev',
+  siteUrl: 'https://harithh.site',
   siteRepo: 'https://github.com/',
   siteLogo: '/static/images/logo.jpg',
   image: '/static/images/logo.jpg',
   socialBanner: '/static/images/logo.jpg',
   email: 'harith_csx01@yahoo.com',
-  github: 'https://github.com/hta218',
-  x: 'https://x.com/hta218_',
-  facebook: 'https://facebook.com/hta218',
-  youtube: 'https://www.youtube.com/@hta218_',
-  linkedin: 'https://www.linkedin.com/in/hta218/',
+  github: 'https://github.com/harithh0',
+  x: 'https://x.com/',
+  facebook: 'https://facebook.com/',
+  youtube: 'https://www.youtube.com/',
+  linkedin: 'https://www.linkedin.com/in/harith-hayyawi/',
   locale: 'en-US',
-  analyticsURL: 'https://analytics.leohuynh.dev/share/jkwRskv0/leohuynh.dev',
+  analyticsURL: 'https://google.com',
   analytics: {
     plausibleDataDomain: '',
     simpleAnalytics: false, // true | false
@@ -19,9 +19,9 @@ export let siteMetadata = {
     googleAnalyticsId: '', // e.g. UA-000000-2 or G-XXXXXXX
   },
   socialAccounts: {
-    github: 'hta218',
-    linkedin: 'hta218',
-    x: 'hta218_',
+    github: 'harithh0',
+    linkedin: 'harith-hayyawi',
+    x: 'h',
   },
 }
 

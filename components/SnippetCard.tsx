@@ -3,7 +3,7 @@ import { BrandIcon } from './BrandIcon'
 import { Link } from './Link'
 
 export function SnippetCard({ snippet }: { snippet: SnippetFrontMatter }) {
-  let { type, heading, summary, title, slug } = snippet
+  let { type, heading, summary, title, slug} = snippet
 
   return (
     <Link href={`/snippets/${slug}`} title={title}>

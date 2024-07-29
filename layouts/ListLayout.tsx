@@ -2,8 +2,14 @@ import { PostsSearch } from '~/components/PostsSearch'
 import type { ListLayoutProps } from '~/types/layout'
 import { useTranslation } from 'next-i18next'
 import { Tag } from '~/components/Tag'
+import { Pagination } from '~/components/Pagination'
 import { useState } from 'react'
 import { PostListItem } from '~/components/PostListItem'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTag } from '@fortawesome/free-solid-svg-icons';
+
+
+
 
 function ListLayout(props: ListLayoutProps) {
   let { posts, title, initialDisplayPosts = [], pagination } = props
@@ -28,8 +34,11 @@ function ListLayout(props: ListLayoutProps) {
       return acc
     }, {})
 
+
+    
+
   // Step 2: Create a unique list of tags
-  const uniqueTags = Object.keys(tagFrequency)
+  const uniqueTags = Object.keys(tagFrequency).sort((a, b) => tagFrequency[b] - tagFrequency[a]);
 
   // Step 3: Filter posts by selected tag
   if (selectedTag) {
@@ -50,8 +59,13 @@ function ListLayout(props: ListLayoutProps) {
         </header>
 
         <ul className="mt-10">
-          <p>Tags:</p>
-          <div className="flex flex-wrap gap-2.5 text-bgColor justify-end mb-20">
+        <div className="mt-5 mr-10 mb-5">
+        <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FontAwesomeIcon icon={faTag} size="2x" />
+          Tags
+        </p>
+        </div>
+          <div className="flex flex-wrap gap-2.5 text-bgColor justify-end mb-5">
             {uniqueTags.map((tag) => (
               <li key={tag}>
                 <a
@@ -63,8 +77,8 @@ function ListLayout(props: ListLayoutProps) {
                     fontStyle: 'italic',
                     backgroundColor: '#4a5568',
                     borderRadius: '0.25rem',
+                    cursor: 'pointer',
                   }}
-                  href={`/tags/${tag}/`}
                   onClick={() => setSelectedTag(tag)}
                 >
                   #{tag}
@@ -88,6 +102,9 @@ function ListLayout(props: ListLayoutProps) {
           ))}
         </ul>
       </div>
+      {pagination && pagination.totalPages > 1 && !searchValue && (
+        <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
+      )}
     </>
   )
 }

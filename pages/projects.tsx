@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { PageSeo } from 'components/SEO'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -17,11 +18,12 @@ export async function getStaticProps({ locale }) {
 }
 
 export default function Projects({ projectsData }: { projectsData: Project[] }) {
-  let workProjects = projectsData.filter(({ type }) => type === 'work')
-  let sideProjects = projectsData.filter(({ type }) => type === 'self')
-  let { t } = useTranslation('common')
+  const [selectedCategory, setSelectedCategory] = useState('software')
+  const SoftwareProjects = projectsData.filter(({ type }) => type === 'software')
+  const CybersecurityProjects = projectsData.filter(({ type }) => type === 'cyber')
+  const { t } = useTranslation('common')
 
-  let description = t('projects.projects_description')
+  const description = t('projects.projects_description')
 
   return (
     <>
@@ -41,22 +43,36 @@ export default function Projects({ projectsData }: { projectsData: Project[] }) 
           </p>
         </div>
         <div className="container py-12">
-          <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
-            {t('projects.work_title')}
-          </h3>
-          <div className="-m-4 flex flex-wrap">
-            {workProjects.map((project) => (
-              <ProjectCard key={project.title} project={project} />
-            ))}
+          <div className="flex justify-center mb-8">
+            <button
+              className={`px-4 py-2 mr-4 ${selectedCategory === 'software' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded`}
+              onClick={() => setSelectedCategory('software')}
+            >
+              {t('projects.work_title')}
+            </button>
+            <button
+              className={`px-4 py-2 ${selectedCategory === 'cyber' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded`}
+              onClick={() => setSelectedCategory('cyber')}
+            >
+              {t('projects.side_title')}
+            </button>
           </div>
-        </div>
-        <div className="container py-12">
-          <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
-            {t('projects.side_title')}
-          </h3>
+
+          {selectedCategory === 'software' && (
+                      <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
+                      {t('projects.work_title')}
+                    </h3>
+            )}
+          {selectedCategory === 'cyber' && (
+                    <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
+                    {t('projects.side_title')}
+                  </h3>
+          )}
+
           <div className="-m-4 flex flex-wrap">
-            {sideProjects.map((project) => (
+            {(selectedCategory === 'software' ? SoftwareProjects : CybersecurityProjects).map((project) => (
               <ProjectCard key={project.title} project={project} />
+              
             ))}
           </div>
         </div>

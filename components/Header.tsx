@@ -21,12 +21,12 @@ export function Header({ navShow, onToggleNav }: { onToggleNav: () => void; navS
               <NextImage
                 src="/static/images/logo.jpg"
                 alt="logo"
-                width={45}
-                height={45}
+                width={65}
+                height={65}
                 className="rounded-full"
               />
             </div>
-            <h1>Harith Hayyawi</h1>
+            <h1 className="text-xl" >Harith Hayyawi</h1>
           </div>
         </Link>
         <div className="flex items-center gap-4">

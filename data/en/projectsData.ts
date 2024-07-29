@@ -2,7 +2,7 @@ import type { Project } from '~/types/data'
 
 export let projectsData: Project[] = [
   {
-    type: 'work',
+    type: 'software',
     title: 'Weaverse - Shopify Hydrogen Theme Customizer & Headless CMS',
     description: `The first Hydrogen-driven website builder powered by AI. Weaverse is a Shopify sales channel that allows you to create a website in minutes with no coding required.`,
     imgSrc: '/static/images/weaverse-hydrogen.jpg',
@@ -10,7 +10,7 @@ export let projectsData: Project[] = [
     builtWith: ['Remix', 'Prisma', 'Tailwind', 'OpenAI'],
   },
   {
-    type: 'work',
+    type: 'cyber',
     title: 'Weaverse SDKs',
     description:
       'Open-source toolkits for seamless integration and development of Shopify Hydrogen themes and headless commerce solutions.',

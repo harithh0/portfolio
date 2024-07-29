@@ -3,7 +3,6 @@ import type { BlogFrontMatter, SnippetFrontMatter } from '~/types/mdx'
 import { formatDate } from '~/utils/date'
 import { Link } from './Link'
 import { Tag } from './Tag'
-import Image from 'next/image';
 
 export function PostListItem({
   frontMatter,
@@ -19,13 +18,10 @@ export function PostListItem({
 
   return (
     <li key={slug} className="flex space-x-4 items-start">
-      <Image
+      <img
         src={Array.isArray(images) ? images[0] : images}
         alt={title}
-        width={200}
-        height={200}
         className="w-1/4 h-auto object-cover"
-        
       />
 
       <article className="flex-1 space-y-2">

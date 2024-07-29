@@ -6,13 +6,14 @@ import { fetcher } from '~/utils/fetcher'
 import { GithubRepo } from './GithubRepo'
 import { Image } from './Image'
 import { Link } from './Link'
+import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
 
 export function ProjectCard({ project }: ProjectCardProps) {
   let { t } = useTranslation('common')
-  let { title, description, imgSrc, url, repo, builtWith } = project
+  let { title, description, imgSrc, url, repo, builtWith, repoUrl} = project
   let { data } = useSWR(`/api/github?repo=${repo}`, fetcher)
   let repository: GithubRepository = data?.repository
-  let href = repository?.url || url
+  let href = repository?.url || url 
 
   return (
     <div className="md p-4 md:w-1/2" style={{ maxWidth: '544px' }}>
@@ -50,17 +51,24 @@ export function ProjectCard({ project }: ProjectCardProps) {
               </div>
             </div>
           </div>
-          {repository ? (
-            <GithubRepo repo={repository} />
-          ) : (
-            <Link
-              href={url}
-              className="text-base font-medium leading-6 text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-              aria-label={`Link to ${title}`}
-            >
-              <span data-umami-event="project-learn-more">{t('projects.learn_more')} &rarr;</span>
-            </Link>
-          )}
+                  {(repo || url) && (
+                    <div className="flex justify-end space-x-4">
+                      {repo  && (
+                        <div className="text-base font-medium leading-6">
+                          <a href={`https://github.com/${repo}`}>
+                            <FaGithub className="text-4xl" />
+                          </a>
+                        </div>
+                      )}
+                      {url && (
+                        <div className="text-base font-medium leading-6">
+                          <a href={url}>
+                            <FaExternalLinkAlt className="text-4xl" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
         </div>
       </div>
     </div>

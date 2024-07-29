@@ -71,10 +71,10 @@
     "copyright_author": "Harith Hayyawi"
   },
   "projects": {
-    "projects_description": "My open-source side projects and stuff that I built with my colleagues at work",
+    "projects_description": "My programming and cybersecurity projects.",
     "projects_title": "Projects",
-    "work_title": "Work",
-    "side_title": "Side projects",
+    "work_title": "Software Dev",
+    "side_title": "Cybersecurity Labs",
     "learn_more": "Learn more",
     "built_with": "Built with"
   },

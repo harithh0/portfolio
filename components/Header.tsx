@@ -48,7 +48,6 @@ export function Header({ navShow, onToggleNav }: { onToggleNav: () => void; navS
             ))}
           </div>
           <div className="flex items-center gap-1">
-            <AnalyticsLink />
             <ThemeSwitcher />
             <MobileNavToggle navShow={navShow} onToggleNav={onToggleNav} />
           </div>

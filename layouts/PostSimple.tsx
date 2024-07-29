@@ -14,7 +14,11 @@ function PostSimple(props: PostSimpleLayoutProps) {
   let { date, title, slug, fileName, tags, readingTime, images } = frontMatter
   let postUrl = `${siteMetadata.siteUrl}/${type}/${slug}`
 
+
+
+
   return (
+    
     <SectionContainer>
       <BlogSeo
         url={`${siteMetadata.siteUrl}/${type}/${slug}`}

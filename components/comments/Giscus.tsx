@@ -14,16 +14,21 @@ function Giscus({ config }: GiscusProps) {
 
     let script = document.createElement('script')
     script.src = 'https://giscus.app/client.js'
-    script.setAttribute('data-repo', config.repo)
-    script.setAttribute('data-repo-id', config.repositoryId)
-    script.setAttribute('data-category', config.category)
-    script.setAttribute('data-category-id', config.categoryId)
-    script.setAttribute('data-mapping', config.mapping)
-    script.setAttribute('data-reactions-enabled', config.reactions)
-    script.setAttribute('data-emit-metadata', config.metadata)
-    script.setAttribute('data-theme', giscusTheme)
-    script.setAttribute('crossOrigin', 'anonymous')
+    script.setAttribute('data-repo', 'harithh0/portfolio'); // Replace with your repo
+    script.setAttribute('data-repo-id', 'R_kgDOMcUxPg'); // Replace with your repo ID
+    script.setAttribute('data-category', '[ENTER CATEGORY NAME HERE]'); // Replace with your category
+    script.setAttribute('data-category-id', '[ENTER CATEGORY ID HERE]'); // Replace with your category ID
+    script.setAttribute('data-mapping', 'og:title');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'top');
+    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-lang', 'en');
+    script.crossOrigin = 'anonymous';
     script.async = true
+
+    
 
     let commentsNode = document.getElementById(GISCUS_COMMENTS_ID)
     if (commentsNode) commentsNode.appendChild(script)

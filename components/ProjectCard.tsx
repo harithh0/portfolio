@@ -10,7 +10,7 @@ import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
 
 export function ProjectCard({ project }: ProjectCardProps) {
   let { t } = useTranslation('common')
-  let { title, description, imgSrc, url, repo, builtWith, repoUrl} = project
+  let { title, description, imgSrc, url, repo, builtWith} = project
   let { data } = useSWR(`/api/github?repo=${repo}`, fetcher)
   let repository: GithubRepository = data?.repository
   let href = repository?.url || url 

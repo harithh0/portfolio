@@ -12,7 +12,7 @@ export function FeaturedProjects() {
   return (
     <div className="border-t border-gray-200 dark:border-gray-700">
       <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-        {!projectsData.length && 'No projects found.'}
+        {/* {!projectsData.length && 'No projects found.'} */}
 
         {projectsData.slice(0, MAX).map((project) => {
           let { type, title, description, imgSrc, url, repo, builtWith } = project

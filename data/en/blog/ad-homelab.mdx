@@ -1,0 +1,278 @@
+---
+title: 'Active Directory Homelab'
+date: '2024-05-25'
+tags: ['Active Directory', 'DNS', 'DHCP', "Security"]
+
+draft: false
+summary: 'Creating a Active Directory enviornment and users to learn about AD and its uses'
+images: ['/static/images/ad-homelab-base.png']
+authors: ['default']
+---
+
+
+import UnsplashPhotoInfo from './UnsplashPhotoInfo.tsx'
+
+<UnsplashPhotoInfo photoURL="https://pandorafms.com/blog/wp-content/uploads/2022/04/Que-es-Active-Directory.png" author="Pandora FMS team" />
+
+
+
+
+### Introduction 
+
+Welcome to the lab on setting up a Windows Server 2019 virtual machine (VM) using Oracle VirtualBox. This lab will guide you through the process of installing and configuring a Windows Server 2019 VM, setting up Active Directory (AD), and configuring essential network services such as Network Address Translation (NAT) and Dynamic Host Configuration Protocol (DHCP).
+
+In this lab, you will start by installing Windows Server 2019 using the ISO file and configuring the virtual machine's network adapters to ensure proper connectivity. You'll then proceed to install and configure Active Directory Domain Services (AD DS) to set up a domain controller. Afterward, you'll create a dedicated domain admin account and configure NAT to allow internal network clients to access the internet. Finally, you'll set up a DHCP server to manage IP address assignments and add Windows client machines to the domain.
+
+By the end of this lab, you'll have a fully functional Windows Server environment with Active Directory, NAT, and DHCP configured, providing a solid foundation for further network and server management tasks. Let's get started!
+
+
+
+![image](/static/images/ad-lab.png)
+
+### Getting Windows server 2019 VM started
+
+For this lab you will need the Windows server 2019 ISO which can be found [here](https://www.microsoft.com/en-us/evalcenter/download-windows-server-2019) and Oracle Virtual Box.
+
+This lab assumes you are already familiar with the basics.
+
+After installing the ISO you need to create a virtual machine with it in Virtual Box.
+
+The only settings you need to change are the Network adapters:
+
+- You need one that is NAT, this will be our external network that can access the internet and route traffic from the internal network to the external.
+- ![image](/static/images/Pasted___20240906102806.png)
+- And one that is Internal
+- ![image](/static/images/Pasted___20240906102850.png)
+
+
+After going through the complete process you will need to go to the Network and Internet settings in the control panel.
+You should see 2 adapters, you will need to figure out which one is the external (home IP) and the one that is internal.
+
+You can check by right clicking and selecting properties and looking at the IPv4 address. If it shows 10.x.x.x or a private IP address then that it means this one will be the external. You can rename it to help you.
+
+If the IP is 169.254.x.x then that means this is the Internal adapter. You get this IP range when there is no DHCP server on the network. 
+
+After identifiying and renaming your adapters, go to the properites of the internal adapter and change the IPv4 to 172.16.0.1 /24 and the DNS server as 127.0.0.1 or 172.16.0.1 because it will be using itself as the DNS server because Windows server already setups DNS. 
+
+You are now ready to install AD and setup the Domain Controller.
+### Installing Active Directory Domain Services and creating a Domain 
+
+- Click on (2) Add roles and features
+
+![image](/static/images/Pasted___20240904064844.png)
+
+- Select the server
+![image](/static/images/Pasted___20240904065025.png)
+
+- Select Active Directory Domain Services
+![image](/static/images/Pasted___20240904065117.png)
+
+- Click next and then install. Note: It might take some time.
+
+
+### Configuring Active Directory
+
+- After installing AD DS, you will see a flag with a yellow warning sign at the top right. Since we installed AD but have not created any domain yet, we will need to create one so click it, and then click "promote this server to a domain controller."
+
+![image](/static/images/Pasted___20240904065536.png)
+
+- Click on add new forest and speicify the domain you want
+![image](/static/images/Pasted___20240904065655.png)
+
+- After you will be prompted to enter password
+![image](/static/images/Pasted___20240904065747.png)
+
+- Select next throughout the installation wizard and then when you reach the install, click it.
+- After installation is complete you will be prompted to restart your computer.
+
+
+
+### Creating dedicated domain admin account
+> Instead of using built in admin account, lets create a new admin account in a group.
+
+- Go to windows admin tools (Windows Key - > Windows Admin tools -> **Active Directory Users and Computers**)
+- You will see the domain you have created such as  `domain.mycompany.com`, right click it, and select New -> **Organizational Unit**
+![image](/static/images/Pasted___20240904103354.png)
+
+![image](/static/images/Pasted___20240904103820.png)
+
+- After creating `Admins` group, add yourself to the group as an admin
+	- Admins -> New -> User
+![image](/static/images/Pasted___20240904103926.png)
+
+- Continue through the setup
+![image](/static/images/Pasted___20240904104017.png)
+
+- Next add the user you create to the domain admin group
+![image](/static/images/Pasted___20240904104225.png)
+![image](/static/images/Pasted___20240904104248.png)
+
+- After adding user to admin group, you need to sign out of windows and login as "Other User"
+- Type in the username you just create such as `admin-harith` and password to login:
+![image](/static/images/Pasted___20240904104426.png)
+
+### Setting up NAT
+
+> Setting Network Address Translation will allow our connect clients to still have access to the internet even if they are on a private network
+
+- Doing the same thing as setting up active directory
+	- Go to Server Manager -> Add Roles and Features -> go through until reaching server selection and select Remote Access
+
+![image](/static/images/Pasted___20240904213004.png)
+
+- In role Services select RAS and Routing
+
+![image](/static/images/Pasted___20240904213050.png)
+- Finally skip through until you install
+
+
+- After installing go to tools -> Routing and Remote Access
+![image](/static/images/Pasted___20240905073633.png)
+
+
+- Right click on your computer name then select Configure and Enable Routing and Remote Access
+![image](/static/images/Pasted___20240905073706.png)
+
+- In the wizard select NAT
+![image](/static/images/Pasted___20240905073807.png)
+
+- Select your internet NIC (the one from the DHCP server (host))
+
+![image](/static/images/Pasted___20240905073912.png)
+
+- Click next -> finish and you should see something like this:
+![image](/static/images/Pasted___20240905074009.png)
+
+### Setting up DHCP server
+
+- Back to the Add Roles and Features Wizard you want to select and install DHCP server from the server roles
+![image](/static/images/Pasted___20240905074205.png)
+
+- Next head to Tools -> DHCP
+- You will see that we have both IPv4 and IPv6 under the domain, they are both down so we need to enable them.
+- Right click on IPv4 and select new scope
+![image](/static/images/Pasted___20240905074513.png)
+
+- Give it a name and set the IP values to this:
+![image](/static/images/Pasted___20240905074640.png)
+
+- Next you want to select configure these options now for DHCP as this will allow us to configure DNS, gateway, and more settings so clients can connect to the internet.
+- For default gateway you can use the Domain Controller's IP
+![image](/static/images/Pasted___20240905074904.png)
+
+- Select next through the settings and keep everything default
+
+- After configuring DHCP scope, you will need to right click on the domain and select authorize then right click it again and click refresh
+
+### Adding Users to AD
+
+Now that we have Active Directory up and running, we need to add some users.
+
+- Head to Tools -> Active Directory Users and Computers
+- Right click on your domain and select New->Organizational Unit and type \_USERS
+- Next right click the \_USERS folder and select New->User
+	- Make a random user you want and remember the password
+
+![image](/static/images/Pasted___20240906091212.png)
+
+
+
+Now that we have setup AD, NAT, and DHCP, we can now move on to adding clients.
+For this Lab I will be using Windows 7 as its more light weight but you can also use Windows 10 **Pro** ISO to install on your virtual machine.
+
+
+
+### Adding windows clients to the domain
+
+>[!note]
+>I will be using Windows 7 but you can you use Windows 10 Pro ISO, Windows 10 Home will not allow you to join a domain.
+
+- When creating your virutal machine make sure you have one network adapter that is set to `Internal Network`, so that it can be connect to the DC and use the DHCP server to get an IP address.
+
+![image](/static/images/Pasted___20240906095323.png)
+
+- After creating your windows virtual machine go to the windows search and type in domain
+
+![image](/static/images/Pasted___20240906092228.png)
+
+- Select Join a domain -> change... and select Member of **Domain** and type in your domain url
+
+![image](/static/images/Pasted___20240906092338.png)
+
+- If it asks you for admin password, use the admin account you created earlier.
+![image](/static/images/Pasted___20240906092431.png)
+
+- You should get this welcome message and be prompted to restart your virtual machine
+![image](/static/images/Pasted___20240906092507.png)
+
+
+- After restarting click Switch User and type in the user you created earlier
+![image](/static/images/Pasted___20240906094927.png)
+> You should notice the Log on to: Domain which tells us that we will be using the AD server to verify our credentials and that we are a part of that domain.
+
+
+
+We can also see this computer as been registered in the AD users and computers directory
+
+![image](/static/images/Pasted___20240906101517.png)
+
+
+
+- Lets run the `ipconfig /all` command in cmd and see our network details
+
+
+![image](/static/images/Pasted___20240906095422.png)
+
+We can see a couple things here, first we can see the DHCP is enabled and that we have gotten an IP address from the `172.16.0.100-200` pool. We can also see the default gateway `172.16.0.1` which the Windows server's internal NIC (DC).
+
+
+We can see the computer's IP address in the DHCP pool
+![image](/static/images/Pasted___20240906101742.png)
+
+
+
+#### Accessing Internet using NAT 
+
+Lets ping `google.com` to see if the internet works.
+
+![image](/static/images/Pasted___20240906095654.png)
+
+We can see that the DNS server as well as NAT is properly configured.
+
+#### Using trace route to see network path
+
+Using `tracert` is helpful in looking at the path that packets take to reach their destination. 
+
+Lets `tracert` google.com and see NAT working!
+
+![image](/static/images/Pasted___20240906100435.png)
+
+`DC-lab [172.16.0.1]` is the Domain Controller (Windows Server) that hosts NAT, AD, and DHCP. It is inside the internal network.
+
+`10.0.2.2` is also the Domain Controller but with the IP of the external adapter. This is the IP that is NAT'ed to Host computer behind the virtual machine.
+
+`Client -> DC-lab Internal -> DC-lab External -> Host IP -> External gateway`
+
+
+
+### Conclusion
+
+This wraps up this lab. You can now add more clients and install additional features on your Windows Server to expand its functionality. With your Active Directory Domain and NAT setup complete, you’re ready to manage a more complex network environment and further customize your server to meet specific needs.
+
+
+### Notes
+
+- When setup a domain in windows, you are basically saying that when we log in we will use the AD server for authentication and users, Hint it will say `Log on to: DOMAIN`
+
+#### What is a domain in AD?
+In Windows Active Directory (AD), a **domain** is like a virtual boundary that groups computers, users, and resources (like printers and shared folders) under one administration. All the devices and users in a domain are managed by a central server called a **Domain Controller** (DC) which is the windows server 2019 we setup.
+
+Essentially, a domain allows for centralized control, so administrators can manage user permissions, security settings, and access to resources across all computers in that domain with a single set of rules. Users only need one login (username and password) to access resources in the domain.
+
+It's helpful for organizations because it simplifies user management and enhances security!
+
+#### Technologies used
+Windows Server 2019 is an operating system designed for managing network resources, providing security, and running applications. Active Directory (AD) is a tool that allows us to manage user accounts and permissions centrally, making it easier to control who has access to what on the network. Network Address Translation (NAT) translates private IP address into one single IP used to access the outside internet, allowing multiple devices to share one public IP address, making it harder for outsiders to see our internal IPs. Dynamic Host Configuration Protocol (DHCP) automatically assigns IP addresses to devices on the network, which helps prevent errors and saves time.
+
+
+ 

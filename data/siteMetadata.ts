@@ -4,7 +4,7 @@ export let siteMetadata = {
   siteLogo: '/static/images/logo.jpg',
   image: '/static/images/logo.jpg',
   socialBanner: '/static/images/logo.jpg',
-  email: 'harith_csx01@yahoo.com',
+  email: 'me@harithh.site',
   github: 'https://github.com/harithh0',
   x: 'https://x.com/',
   facebook: 'https://facebook.com/',

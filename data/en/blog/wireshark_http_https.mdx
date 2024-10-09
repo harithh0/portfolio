@@ -1,0 +1,95 @@
+---
+title: 'Analyzing HTTP vs. HTTPs in wireshark 🦈'
+date: '2024-07-15'
+tags: ['wireshark', 'networking', 'HTTP', 'security']
+
+draft: false
+summary: 'Analyzing HTTP and HTTPs traffic in wireshark, showcasing their differences and why HTTPs is important'
+images: ['/static/images/HTTP-To-HTTPS.png']
+authors: ['default']
+---
+
+
+import UnsplashPhotoInfo from './UnsplashPhotoInfo.tsx'
+
+<UnsplashPhotoInfo photoURL="https://unsplash.com/photos/TMa0l7fdSW8" author="Dang Cong" />
+
+
+
+## Introduction
+
+We will be analyzing HTTP and HTTPs traffic in wireshark, showcasing their differences and why HTTPs is important.
+
+## HTTP vs HTTPs
+
+### HTTP (Hyper Text Transfer Protocol)
+- HTTP is used for transmitting data between a web server and a client (typically a web browser). It operates at the Application Layer of the OSI model and defines the rules for how messages are formatted, transmitted, and processed, and how web servers and browsers should respond to various commands.
+
+### HTTPs (Hyper Text Transfer Protocol **Secure**)
+- HTTPS is the **secure** version of HTTP. It adds an extra layer of security by encrypting the data exchanged between the web server and the client using SSL/TLS (Secure Sockets Layer/Transport Layer Security).
+- **Encryption:** HTTPS encrypts the data being transmitted, which protects it from eavesdropping, tampering, and forgery. It ensures that any data sent between the client and server remains confidential and integral.
+
+## Analyzing HTTP in Wireshark
+
+- I will go a web page that is designed to have an insecure connection and enter some sign up information.
+![image](/static/images/Pasted_image_20240726214558.png)
+>  As we can see, the browser is showing the connection as "Not secure", highlighting the fact that we are using HTTP and not HTTPs.
+
+- On the wireshark panel we can see that i have made a request to this server and have requested the path ```/accounts/signup```:
+- ![image](/static/images/Pasted_image_20240726215718.png)
+- In HTTP, the "GET" method is used to request data from a server, like asking a website to show you a specific webpage or piece of information.
+> Unlike HTTPs, your request headers including the path of the url you go to is not encrypted.
+
+- Now lets see what happens on the wireshark panel when we click submit
+
+![image](/static/images/Pasted_image_20240726214558.png)
+
+- We can see that we have posted data to the server, the "POST" method is used to send data to a server to create or update a resource, like submitting a form on a website to register or make a purchase.
+
+- Lets look a bit further by right clicking -> pressing follow then tcp stream
+
+![image](/static/images/Pasted_image_20240726224613.png)
+- Here we can see a lot more information. The blue is the client and the red is the server. In this case, we are sending our data to the server, the server then process it that data and sends us a response in red.
+- In the blue we can see some interesting data:
+- ![image](/static/images/Pasted_image_20240726221347.png)
+	- We can see the exact input data we entered in the form in clear text!
+	- This is obviously not a secure way to send important information as we can see it in the clear.
+
+Now lets move on to analyzing HTTPs in wireshark
+
+## Analyzing HTTP**s** in Wireshark
+
+Okay lets try things again, this time I will have the server use HTTPs and lets see how things look.
+
+- Here is the same page again, but this time it is using a secure connection to the server:
+- ![image](/static/images/Pasted_image_20240726222428.png)
+
+
+- Lets see if we can see the path we took in wireshark
+- ![image](/static/images/Pasted_image_20240726222652.png)
+	We cannot see the path we took since we are using HTTPs. It not only encrypts the data being sent but also the full path you take to the url.
+
+- If we click on the application data we see nothing but gibberish data.
+  ![image](/static/images/Pasted_image_20240726222833.png)
+
+- Okay now lets see submit our data and see it through wireshark!
+- ![image](/static/images/Pasted_image_20240726222945.png)
+	Every packet that is being sent and received is encrypted
+
+- Lets follow the tcp stream again and see what we get:
+- ![image](/static/images/Pasted_image_20240726223048.png)
+	We can't even make up anything from this data
+
+- The encryption applied by HTTPS ensures that the information remains secure and cannot be easily reconstructed or understood, even with packet capture tools. This is exactly it's very important especially if you sending important information through the web.
+
+By examining the encrypted data in Wireshark, we see firsthand the level of protection HTTPS provides. Unlike HTTP, where data is exposed in clear text and can be easily accessed, HTTPS ensures that sensitive information such as user credentials, personal details, and other critical data remains confidential. The encryption process used in HTTPS helps in mitigating risks such as man-in-the-middle attacks, where malicious actors attempt to intercept and manipulate communications.
+
+## Conclusion
+
+In this analysis, we’ve demonstrated the stark differences between HTTP and HTTPS through practical examination using Wireshark.
+
+**HTTP** lacks encryption, making it vulnerable to interception and exposing data in plaintext, including sensitive information like form inputs.
+
+In contrast, **HTTPS** encrypts data between client and server, protecting the content and obscuring URL paths. Even if intercepted, HTTPS keeps the data unreadable, safeguarding sensitive information with SSL/TLS encryption, crucial for secure online transactions.
+
+

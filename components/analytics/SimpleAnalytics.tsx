@@ -11,6 +11,8 @@ export function SimpleAnalyticsScript() {
   )
 }
 
+
+
 // https://docs.simpleanalytics.com/events
 export function logEvent(eventName: string, callback: () => void) {
   if (callback) {

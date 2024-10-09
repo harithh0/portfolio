@@ -39,7 +39,7 @@ export default function Home({ posts }) {
               <ShortDescription />
               <BlogLinks />
               <ul className="flex items-start gap-2 mt-10">
-                <div className="mt-1 mr-1">
+                <div className=" mr-1">
                   <p>Find me on</p>
                 </div>
                 {socialLinks.map(({ friendlyName, link, icon }) => (

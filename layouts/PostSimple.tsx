@@ -31,7 +31,7 @@ function PostSimple(props: PostSimpleLayoutProps) {
           <header className="py-6 xl:pb-16 xl:pt-16">
             <div className="space-y-6">
               <div className="flex justify-center">
-                <img src={Array.isArray(images) ? images.join(' ') : images} alt="blog-image" className="object-cover w-full h-96" />
+                <img src={Array.isArray(images) ? images.join(' ') : images} alt="blog-image" className="object-cover w-50 h-50" />
               </div>
               <PageTitle>{title}</PageTitle>
               <BlogTags tags={tags} />

@@ -1,0 +1,144 @@
+---
+title: 'Pi-Hole setup on raspberry pi, block ads, malware, and more'
+date: '2024-05-25'
+tags: ['raspberry-pi', 'networking', 'DNS']
+
+draft: false
+summary: 'Analyzing HTTP and HTTPs traffic in wireshark, showcasing their differences and why HTTPs is important'
+images: ['/static/images/base.png']
+authors: ['default']
+---
+
+
+## What is pi-hole?
+
+**Pi-hole** is a smart tool that blocks ads and snoopy trackers across your whole network. It works by intercepting requests for certain websites, keeping out unwanted stuff like ads and trackers before they even reach your devices. You can set it up on devices like Raspberry Pi or in Docker containers, and it uses lists to know what to block. This keeps your internet browsing free from ads and helps protect your privacy by stopping your data from being collected by certain websites. It quietly does its job, making your online experience smoother and safer without you having to do much.
+
+
+
+## But how does it work?
+
+Pi-hole acts as a DNS server that sits between your network devices and the router. When you try to access `google.com` for example, you will first need to get the IP address of that domain. Instead of sending the DNS request to your ISP's DNS server or a public DNS server (like Google's or Cloudflare's), your device sends the request to the Pi-hole DNS server. 
+
+When requesting Google's IP address from the Pi-Hole DNS, it first checks if that site is inside the blacklist database. If it is, it will block the connection and return a `Unable to connect` error.
+
+If it is not in the blacklist, it will then go to an upstream recrustive solver, which is basically another perferd DNS server that you can setup in Pi-Hole configuration, such as Cloudflare DNS, Google DNS, and OpenDNS. The response will be sent back to the Pi-Hole wher it will cache the IP address for future requests and then send back the resolved IP address back to the device. Finally, your device uses the IP address provided to connect to the webserver.
+
+Illustration:
+
+![diagram](/static/images/diagram.png)
+
+## What you will need
+
+- Raspberry pi model 3, 4, or 400
+- Ethernet cable, peripherals, and of course a router
+
+## Installation
+
+### Step 1: Setup raspberry pi
+
+1. Prepare SD card : If you don’t have a flashed image already installed on your raspberry pi, flash a microSD card with Raspberry Pi OS using the Raspberry Pi Imager.
+		- Make sure that you enable ssh and set IP address in configuration if you would like to connect after installation.
+2.  Setup: Insert the SD card into the raspberry pi and connect peripherals
+
+### Step 2: Connect & Update
+
+1. Terminal Access: Open a terminal or connect remotely via SSH to your Raspberry Pi.
+2. Update and upgrade the system by running `sudo apt update && sudo apt upgrade`.
+
+### Step 3: Install pi-hole
+
+1. Download Pi-hole: Run the command `curl -sSL https://install.pi-hole.net | bash`.  [Official Page](https://github.com/pi-hole/pi-hole#one-step-automated-install)
+2. Follow Installer: The installer will guide you through the setup process. Choose your settings as prompted (DNS provider, blocklists, etc.).
+
+	Install wizard: 
+	![image](/static/images/Pasted_image_20240112194958.png)
+
+	Installation complete:
+	![image](/static/images/Pasted_image_20240112191818.png)
+		To change password use command: `pihole -a -p` 
+		
+3. Confirm Settings: Confirm the settings before finalizing the installation.
+
+
+#### Note
+If you haven’t already set a static IP address for your raspberry pi – make sure to do so. Having a static IP address will make sure that your pi-hole gets the same IP address every time. You can either do it on the machine or via your router.
+
+### Step 4: Configure router
+
+- **Router DNS Settings**: Access your router's settings and change the DNS settings to point to the Pi-hole IP address. This step ensures all devices using your network benefit from Pi-hole's ad-blocking capabilities.
+- Depending on your router the configuration might be different, but make sure to look for DNS server configuration.
+
+![image](/static/images/Pasted_image_20240112191205.png)
+
+
+
+If you are not able to change the DNS settings in your router, you can instead change it for each device.
+
+#### Go to the devices Network settings
+
+- For Windows go to control panel --> Network and Internet --> Network and Sharing Center --> Select Adapter --> Double Click on Internet Protocol Version 4 (TCP/IPv4) 
+
+![image](/static/images/image.png)
+
+<small >[Image source](https://www.thewindowsclub.com/how-to-change-dns-settings-in-windows-7-vista)</small>
+
+### Step 5: Access Pi-hole Dashboard
+
+- **Access Admin Interface:** Open a web browser and enter the IP address of your Raspberry Pi followed by `/admin` (e.g., `http://0.0.0.0/admin`) or by entering `http://pi.hole/admin`. Here, you'll find the Pi-hole dashboard, allowing you to monitor and manage the ad-blocking functionalities.
+
+![image](/static/images/Pasted_image_20240112191436.png)
+
+
+### Step 6: Maintenance and Customization
+
+- **Regular Updates:** Periodically update Pi-hole using the command `pihole -up` to ensure you have the latest features and blocklists.
+- **Customize Settings:** Explore the settings through on the left side of the dashboard to whitelist/blacklist domains, adjust blocklists, and tailor Pi-hole to your preferences.
+
+You can add 3rd party Block lists which help you extend your blacklist from [Firebog.net](https://firebog.net/)
+– Select a list url you would like to add and enter like this:
+![image](/static/images/Pasted_image_20240112195434.png)
+
+
+
+
+
+
+## Blocking Malware with Pi-hole
+
+To enhance the security of your network, you can use Pi-hole to block known malware domains by adding a malware blocklist. Here's how you can do it:
+
+### Step 1: Access the Pi-hole Dashboard
+
+1. **Open the Admin Interface:** Open a web browser and enter the IP address of your Raspberry Pi followed by `/admin` (e.g., `http://<IP>/admin`) or by entering `http://pi.hole/admin`.
+
+2. **Login:** Log in to the Pi-hole admin dashboard using your password.
+
+### Step 2: Add Malware Blocklist
+
+1. **Navigate to Adlists:** In the Pi-hole admin dashboard, go to `Group Management` > `Adlists`.
+2. **Add a Malware Blocklist:** In the "Adlists" section, you can add URLs of malware blocklists. Here are my recommended malware blocklists:
+   - [Steven Black's Unified Hosts List](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts)
+   - [Malware Domain List](https://www.malwaredomainlist.com/hostslist/hosts.txt)
+   - [Disconnect.me's Malware List](https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt)
+
+   Copy the URL of the blocklist you want to add and paste it into the "Address" field. Click `Add` to add the blocklist to Pi-hole.
+
+### Step 3: Update Gravity
+
+1. **Run Gravity:** After adding the blocklist, you need to update Pi-hole's gravity database to include the new domains. Go to `Tools` > `Update Gravity` and click `Update`.
+
+### Step 4: Verify Blocklist
+
+1. **Check Domains:** To ensure the new malware domains are being blocked, you can check the `Query Log` under `Tools` > `Query Log` to see if any of the added domains are being blocked.
+
+By adding these blocklists, Pi-hole will block access to known malware domains, enhancing the security of your network by preventing devices from connecting to malicious sites.
+
+
+
+If you ever got stuck or need some additonal help you can find more resources in the Pi-Hole Docs: [Pi-hole documentation](https://docs.pi-hole.net/)
+
+
+## Now you can finally enjoy Ad-Free & secure browsing!
+
+Successfully implementing Pi-hole on my Raspberry Pi has not only transformed my browsing experience by eliminating intrusive ads but has also heightened my understanding of network-level ad-blocking solutions. This project serves as a testament to the power and flexibility of open-source tools in enhancing personal privacy and security.

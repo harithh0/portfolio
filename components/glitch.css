@@ -1,0 +1,43 @@
+/* Header.module.css */
+.glitch {
+    color: white;
+    font-size: 100px;
+    margin: 0 auto;
+    width: 400px;
+    position: relative;
+  }
+  
+  .glitch::after {
+    animation: glitch-animation 2s infinite linear alternate-reverse;
+    background: black;
+    clip: rect(0, 900px, 0, 0);
+    color: white;
+    content: attr(data-text);
+    left: 2px;
+    overflow: hidden;
+    position: absolute;
+    text-shadow: -1px 0 red;
+    top: 0;
+  }
+  
+  .glitch::before {
+    animation: glitch-animation-2 3s infinite linear alternate-reverse;
+    background: black;
+    clip: rect(0, 900px, 0, 0);
+    color: white;
+    content: attr(data-text);
+    left: -2px;
+    overflow: hidden;
+    position: absolute;
+    text-shadow: 1px 0 blue;
+    top: 0;
+  }
+  
+  @keyframes glitch-animation {
+    /* Your keyframes here */
+  }
+  
+  @keyframes glitch-animation-2 {
+    /* Your keyframes here */
+  }
+  

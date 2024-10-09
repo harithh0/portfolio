@@ -14,3 +14,4 @@
 .resume tbody tr:nth-child(odd) {
   @apply bg-gray-200;
 }
+

@@ -61,7 +61,7 @@ function ListLayout(props: ListLayoutProps) {
         <ul className="mt-10">
         <div className="mt-5 mr-10 mb-5">
         <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FontAwesomeIcon icon={faTag} size="2x" />
+          <FontAwesomeIcon icon={faTag} />
           Tags
         </p>
         </div>

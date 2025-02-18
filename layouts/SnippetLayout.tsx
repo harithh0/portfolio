@@ -1,4 +1,3 @@
-import { SnippetCard } from '~/components/SnippetCard'
 import type { SnippetLayoutProps } from '~/types/layout'
 
 function SnippetLayout({ snippets, description }: SnippetLayoutProps) {
@@ -14,9 +13,7 @@ function SnippetLayout({ snippets, description }: SnippetLayoutProps) {
       </header>
       <div className="container py-12">
         <div className="grid-cols-2 gap-6 lg:grid">
-          {snippets.map((snippet) => (
-            <SnippetCard key={snippet.title} snippet={snippet} />
-          ))}
+
         </div>
       </div>
     </div>

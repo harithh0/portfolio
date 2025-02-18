@@ -4,7 +4,6 @@ import AuthorLayout from '~/layouts/AuthorLayout'
 import PostLayout from '~/layouts/PostLayout'
 import PostSimple from '~/layouts/PostSimple'
 import ResumeLayout from '~/layouts/ResumeLayout'
-import SnippetLayout from '~/layouts/SnippetLayout'
 import type { MdxLayoutRendererProps } from '~/types/mdx'
 import { Image } from './Image'
 import { Link } from './Link'
@@ -13,7 +12,6 @@ import { Pre } from './Pre'
 let Layouts = {
   PostLayout: PostLayout,
   PostSimple: PostSimple,
-  SnippetLayout: SnippetLayout,
   AuthorLayout: AuthorLayout,
   ResumeLayout: ResumeLayout,
 }

@@ -58,9 +58,9 @@ export default function Home({ posts }) {
               </ul>
             </div>
           </div>
-          <div className="hidden xl:block">
+          {/* <div className="hidden xl:block">
             <ProfileCard />
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -7,7 +7,8 @@ export interface Project {
   imgSrc: string
   url?: string
   repo?: string
-  builtWith: string[]
+  builtWith?: string[]
+  featured?: boolean
 }
 
 export type SiteMetaData = typeof siteMetadata & {

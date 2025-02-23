@@ -37,6 +37,7 @@ export type TwemojiProps = {
 export interface UnsplashPhotoProps {
   photoURL: string
   author: string
+  site_name: string
 }
 
 export interface ViewCounterProps {

@@ -9,15 +9,17 @@ export function PostListItem({
 }: {
   frontMatter: BlogFrontMatter | SnippetFrontMatter
 }) {
-  let { slug, date, title, summary, tags, heading, type, images } = frontMatter as BlogFrontMatter &
+  let { slug, date, title, summary, tags, heading, type, images, writing_type } = frontMatter as BlogFrontMatter &
     SnippetFrontMatter
   let { t, i18n } = useTranslation()
   let lang = i18n.language
   let isSnippets = heading && type
   let category = isSnippets ? 'snippets' : 'blog'
 
+  if (writing_type === 'lab') return null
+
   return (
-    <li key={slug} className="flex space-x-4 items-start">
+    <li key={slug} className="flex space-x-3 items-start">
       <img
         src={Array.isArray(images) ? images[0] : images}
         alt={title}

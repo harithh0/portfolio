@@ -12,8 +12,8 @@ export function FeaturedPosts({ posts }: { posts: BlogFrontMatter[] }) {
     <div className="border-t border-gray-200 dark:border-gray-700">
       <ul className="divide-y divide-gray-200 dark:divide-gray-700">
         {!posts.length && 'No posts found.'}
-        {posts.slice(0, FEATURED_POSTS).map((frontMatter) => {
-          let { slug, date, title, summary, tags, images } = frontMatter
+        {posts.filter((post) => post.writing_type !== 'lab').slice(0, FEATURED_POSTS).map((frontMatter) => {
+          let { slug, date, title, summary, tags, images, writing_type } = frontMatter
           return (
             <li key={slug} className="py-12 flex space-x-4 items-start">
               {/* Image */}

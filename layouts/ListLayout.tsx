@@ -26,13 +26,15 @@ function ListLayout(props: ListLayoutProps) {
   let displayPosts =
     initialDisplayPosts.length > 0 && !searchValue ? initialDisplayPosts : filteredBlogPosts
 
-  // Step 1: Extract all tags and create a frequency map
-  const tagFrequency = displayPosts
-    .flatMap((post) => post.tags)
-    .reduce((acc, tag) => {
-      acc[tag] = (acc[tag] || 0) + 1
-      return acc
-    }, {})
+
+// Step 1: Extract all tags and create a frequency map, ignoring "lab" writing type
+const tagFrequency = displayPosts
+  .filter((post) => post.writing_type !== 'lab') // <-- Exclude lab posts here
+  .flatMap((post) => post.tags)
+  .reduce((acc, tag) => {
+    acc[tag] = (acc[tag] || 0) + 1
+    return acc
+  }, {})
 
 
     

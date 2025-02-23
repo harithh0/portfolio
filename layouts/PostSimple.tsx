@@ -11,9 +11,9 @@ import type { PostSimpleLayoutProps } from '~/types/layout'
 
 function PostSimple(props: PostSimpleLayoutProps) {
   let { frontMatter, type, children, authorDetails, commentConfig } = props
-  let { date, title, slug, fileName, tags, readingTime, images } = frontMatter
+  let { date, title, slug, fileName, tags, readingTime, images, writing_type} = frontMatter
   let postUrl = `${siteMetadata.siteUrl}/${type}/${slug}`
-
+  let is_lab = writing_type === "lab"
 
 
 
@@ -34,7 +34,7 @@ function PostSimple(props: PostSimpleLayoutProps) {
                 <img src={Array.isArray(images) ? images.join(' ') : images} alt="blog-image" className="object-cover w-50 h-50" />
               </div>
               <PageTitle>{title}</PageTitle>
-              <BlogTags tags={tags} />
+              <BlogTags tags={tags} is_lab={is_lab} />
 
               <dl>
                 <div>

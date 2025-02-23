@@ -29,6 +29,8 @@ export type ReadingTime = ReturnType<typeof readingTime>
 export interface BlogFrontMatter extends MdxFrontMatter {
   readingTime: ReadingTime
   fileName: string
+  writing_type: string
+  featured: boolean
 }
 
 export interface SnippetFrontMatter extends BlogFrontMatter {

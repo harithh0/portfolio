@@ -19,7 +19,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     <div className="md p-4 md:w-1/2" style={{ maxWidth: '544px' }}>
       <div className="flex h-full flex-col overflow-hidden rounded-lg border border-transparent shadow-nextjs dark:shadow-nextjs-dark">
         <Image
-          alt={title}
+          alt={title + " image"}
           src={imgSrc}
           className="object-cover object-center md:h-36 lg:h-60"
           width={1088}
@@ -39,15 +39,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <div className="max-w-none space-y-2 text-gray-500 dark:text-gray-400">
               <p>{repository?.description || description}</p>
               <div className="flex flex-wrap space-x-1.5">
-                <span className="shrink-0">{t('projects.built_with')}:</span>
-                {builtWith?.map((tool, index) => {
-                  return (
+              {builtWith && builtWith.length > 0 && (
+                <div className="flex flex-wrap space-x-1.5">
+                  <span className="shrink-1">{t('projects.built_with')}:</span>
+                  {builtWith.map((tool, index) => (
                     <span key={index} className="font-semibold text-gray-600 dark:text-gray-300">
                       {tool}
                       {index !== builtWith.length - 1 && ','}
                     </span>
-                  )
-                })}
+                  ))}
+                </div>
+              )}
               </div>
             </div>
           </div>

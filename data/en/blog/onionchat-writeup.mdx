@@ -1,0 +1,166 @@
+---
+title: 'Creating an end-to-end encrypted chat application using Tor' 
+date: '2024-08-12'
+tags: ['API', 'Tor', 'Cryptography']
+
+writing_type: blog
+draft: false
+summary: 'Writeup of OnionChat'
+images: ['/static/images/blog-assets/onionchat-writeup/onionchat-writeup-base.webp']
+authors: ['default']
+---
+
+
+import UnsplashPhotoInfo from './UnsplashPhotoInfo.tsx'
+
+<UnsplashPhotoInfo photoURL="https://www.freepik.com/premium-vector/vector-design-encrypted-message-icon-style_197690321.htm" author="circlontech" site_name="freekpik" />
+
+
+[OnionChat](https://github.com/harithh0/OnionChat) is an end-to-end encrypted chat application that routes all communication inside Tor. It uses a client-server architecture, asymmetric & symmetric key encryption, and tor proxy for message communication. 
+
+My cryptography course provided valuable insights into real-world encryption techniques, including public-private key encryption used in SSL and advanced algorithms like AES. This knowledge inspired me to develop OnionChat—a secure, end-to-end encrypted chat application that runs entirely on the Tor network. Through this project, I explored encryption techniques, secure messaging, and anonymous communication in a practical setting. The course sparked my curiosity to delve deeper, leading me to build a Linux-based chat application that enhances user privacy by routing all API and WebSocket connections through Tor's secure infrastructure.
+
+
+
+## Overview
+
+### Technologies used
+
+- I used python Django for the REST API & database communication and electron JS for the front end design.
+### How it works
+1. User signs up for app
+	- A private and public is created for that User
+	- Private key stays on user's device, while the public key is sent to the server
+2. Adding/Accepting Friends
+	- The user who accepts the friend request generates a **symmetric key** locally.
+	- The symmetric key is **encrypted** with each user's public key and stored securely on the server for that specific chatroom.
+	- Only users with the private key can decrypt the symmetric key.
+3. Messaging
+	- After accepting friend request, users can now communicate to each other.
+	- When a user sends a message or file, it will encrypt it using the symmetric key, so only the recipient with the same symmetric key could decrypt and view the message or file.
+
+### Sending messages & Receiving messages
+
+#### Sending
+4. Message gets encrypted using the symmetric key created between 2 users. The message also gets signed using the users private key for integrity. 
+		This symmetric key is received from the server in encrypted form then decrypted whenever users joins the "chatroom". 
+5. Message gets sent via websockets, if user is also connected to chatroom, they will receive the message in real-time.
+6. Server will save the encrypted message inside the database, allowing for secure storage and retrieval.
+
+#### Receiving
+7. User requests all encrypted messages in the chatroom via API GET request
+8. If user is connected to chatroom in real-time, they will receive the encrypted message, IV, and signature in real-time.
+9. Each Message gets decrypted using the symmetric key created between 2 users & the message IV, then the message gets validated using its signature and then displayed.
+
+
+#### Diagram
+
+![image](/static/images/blog-assets/onionchat-writeup/tor-chat-2.drawio(2).png)
+
+### Encryption techniques
+In this project I used private/public and symmetric key encryption. Each user upon signup will generate a RSA key pair, the private key stays on the user's device while the public key will be sent to the server to be stored in the database. The private key will be used for decryption and message signing while the public key will be used for encryption. These pairs are used for encrypting and decrypting the symmetric key.
+
+A symmetric key is generated when 3 users become friends. This key will be stored on the server in encrypted form only. It is uniquely stored for each user encrypted based on their public key and can only be decrypted locally using their private key. This is where the public and private keys come to play, we use them to encrypt and decrypt the symmetric key and be able to store it securely.
+
+### Tor communication
+
+Hosting the server on tor and making all communications happen inside the tor network makes it more anonymous and secure. It allows the server's & client's IP address to not be exposed when talking to each other.
+
+Tor works like a proxy by routing internet traffic through a network of volunteer-operated servers (nodes) to anonymize the source and destination of the data. Each request is encrypted multiple times and passes through at least three nodes—a guard node, a middle relay, and an exit node—before reaching its final destination, making it difficult to trace the origin of the request.
+#### Pros
+- Enhanced Privacy and Anonymity
+- End-to-End Encryption Complement
+- Reduced Attack Surface
+
+#### Cons
+- Performance and Latency Issues
+- Limited User Accessibility (Needs tor to be installed)
+- Additional complexity in application building and maintenance
+
+
+
+![image](/static/images/blog-assets/onionchat-writeup/tor-chat.drawio(1).png)
+	Illustration showing a user sending an API/websocket request to the server
+### Challenges faced
+
+Creating this application was both challenging and rewarding. Here are some of the challenges I faced during the process:
+
+#### Having to use a proxy to communicate between the front-end javascript to the index.js electron JS
+- In order to send HTTP requests between the front-end and the API via the Tor network, I was not able to do it regularly via the *ContextBridge*[^1] . Instead, I had to create a proxy as a middleman between the main Electron process and the front-end JavaScript.
+	-  Normally, an HTTP request would look something like this inside the HTML \<script> tag:
+		- `const response = await fetch('${API_URL}/{DIR}/', {method,headers,body}`
+		- However, this approach didn’t work with `.onion` sites. I then tried using the `torRequest` library, but I ran into issues getting it to function properly between the front-end HTML and the main Electron process.
+
+
+##### The Solution
+To work around this, I implemented a local HTTP proxy server on port `3051`, which forwards requests from the front-end to the main Electron process, which then sends them to the `.onion` address using Tor.
+```Javascript
+		// Creates proxy instance
+		const express_http_api = express();
+		const server_http_api= http.createServer(express_http_api);
+		server_http_api.setMaxListeners(20);
+		const proxyAgent = new SocksProxyAgent('socks5h://127.0.0.1:9050');
+```
+
+Now I decided to create a format for the request to look something like this:
+- `const response = await fetch('${API_URL_LOCAL_PROXY}${API_URL}/{DIR}/', {method,headers,body}`
+	- Example:`http://localhost:3051/?url=http://elzx5hscx2io6qn5wy4n6ayeg436k66xzuqrrrzltzxxuxl6h2lyqhyd.onion/api/accept_friend_request/` + Header Info
+- Which will be passed on to here:
+```javascript
+		/*Runs, whenever something is forwarded to port 3051
+		- Splits and gets the url query parameter field
+		- Passes header information directly to the new HTTP request via Tor
+		- ProxyRequestUrl -> ProxyFunction -> RealUrl sent via port 9050 (Tor service)
+		*/
+		express_http_api.use('/', (req, res, next) => {
+		  const targetUrl = req.query.url;
+		  if (!targetUrl) {
+		    res.status(400).send('Missing url query parameter');
+		    return;
+		  }
+		  const parsedUrl = url.parse(targetUrl);
+		  const newUrl = `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}`;
+		
+		  createProxyMiddleware({
+		    target: newUrl,
+		    changeOrigin: true,
+		    agent: proxyAgent,
+		    pathRewrite: (path, req) => {
+		      // Remove the 'url' query parameter from the path
+		      const queryIndex = path.indexOf('?');
+		      if (queryIndex !== -1) {
+		        const queryParams = new URLSearchParams(path.substring(queryIndex + 1));
+		        queryParams.delete('url');
+		        return path.substring(0, queryIndex) + (queryParams.toString() ? '?' + queryParams.toString() : '');
+		      }
+		      return path;
+		    },
+		    onProxyReq: (proxyReq, req, res) => {
+		      proxyReq.setHeader('Host', parsedUrl.host);
+		    }
+			  })(req, res, next);
+			});
+
+```
+
+
+- This took me a while to figure out, as I initially tried several methods to avoid using a proxy. I first assumed that `torRequest` could work directly inside the frontend JavaScript, allowing me to use a regular HTTP request format. However, this approach didn’t work as expected.
+- I also had to implement a similar proxy for WebSockets, using the same idea but adapting it to the WebSocket protocol instead of HTTP. This was just as challenging as the HTTP proxy, but in the end, it allowed for a stable and secure connection through Tor.
+
+#### Encryption and decryption of files
+- While implementing secure file sharing, I faced several challenges. The first issue arose when passing the binary data of a selected file to an encryption function via ContextBridge[^1]. Although encryption seemed to work—producing ciphertext—decryption with the same symmetric key consistently failed. After hours of debugging, I realized that encrypting and decrypting files isn’t the same as handling regular strings. Instead of continuing down a broken path, I explored alternative methods and ultimately decided to use a Python script to handle file encryption and decryption. This script is executed when needed, returning the processed file securely.
+- Another challenge came when transferring encrypted files between users. Initially, I sent the files directly through the WebSocket connection, but WebSockets aren’t suited for large data transfers. To resolve this, I switched to sending files via an API endpoint using HTTP, while WebSockets were only used to notify users when a file was sent or received.
+
+
+
+
+
+
+[^1]: In electron.js: it is used to safely share data and functions between the main process and the frontend (renderer) without giving full access to Node.js, making the app more secure
+
+
+### Conclusion
+
+Overall working on this project was very rewarding. It taught me a lot from encryption to debugging. Researching and learning about new technologies such as Tor Hidden Services and how they work was very interesting.  This project was a fun experiment to deepen my understanding of cryptography and security. This project was <u>primarily a learning experiment</u>, there are some potential bugs and missing error-handling mechanisms, but the core principles of secure communication and anonymity are fully implemented. If you're interested in these technologies, feel free to experiment with the project and even contribute ideas for improvement!
+
+

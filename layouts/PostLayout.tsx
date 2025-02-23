@@ -12,8 +12,9 @@ import type { PostLayoutProps } from '~/types/layout'
 
 function PostLayout(props: PostLayoutProps) {
   let { frontMatter, authorDetails, page, children, commentConfig } = props
-  let { slug, fileName, date, title, tags, readingTime } = frontMatter
+  let { slug, fileName, date, title, tags, readingTime, writing_type} = frontMatter
   let postUrl = `${siteMetadata.siteUrl}/blog/${slug}`
+  let is_lab = writing_type === "lab"
 
   return (
     <SectionContainer>
@@ -47,7 +48,7 @@ function PostLayout(props: PostLayoutProps) {
             <footer>
               <div className="text-sm font-medium leading-5 xl:col-start-1 xl:row-start-2">
                 <div className="py-4">
-                  <BlogTags tags={tags} />
+                  <BlogTags tags={tags} is_lab={is_lab}/>
                 </div>
               </div>
             </footer>

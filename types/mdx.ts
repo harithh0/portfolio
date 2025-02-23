@@ -22,6 +22,9 @@ export interface MdxFrontMatter {
   images?: string[] | string
   authors?: string[]
   slug: string
+  writing_type: string
+  featured: boolean
+
 }
 
 export type ReadingTime = ReturnType<typeof readingTime>

@@ -32,8 +32,8 @@ export function FeaturedProjects() {
 
                 {/* Image */}
                 <div className="text-center">
-                <img src={imgSrc} alt={title} className="inline-block w-1/2 h-full object-cover" />
-              </div>
+                  <img src={imgSrc} alt={title} className="inline-block w-1/2 h-full object-cover" />
+                </div>
                 {/* Description */}
                 {description && (
                   <div className=" max-w-none text-gray-500 dark:text-gray-400">
@@ -61,18 +61,18 @@ export function FeaturedProjects() {
                   <div className="flex space-x-4">
                     {repo && (
                       <div className="text-base font-medium leading-6">
-                        <a href={`https://github.com/${repo}`} >
+                        <a href={`https://github.com/${repo}`} target="_blank" rel="noopener noreferrer">
                           <FaGithub className="text-4xl" />
                         </a>
                       </div>
                     )}
                     {url && (
-                          <div className="text-base font-medium leading-6 flex items-center">
-                            <a href={url} className="flex items-center">
-                            <span className="mr-2">View</span>
+                      <div className="text-base font-medium leading-6 flex items-center">
+                        <a href={url} className="flex items-center" target="_blank" rel="noopener noreferrer">
+                          <span className="mr-2">View</span>
                           <FaExternalLinkAlt className="text-4xl" />
-                            </a>
-                          </div>
+                        </a>
+                      </div>
                     )}
                   </div>
                 )}

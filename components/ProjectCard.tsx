@@ -10,10 +10,10 @@ import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
 
 export function ProjectCard({ project }: ProjectCardProps) {
   let { t } = useTranslation('common')
-  let { title, description, imgSrc, url, repo, builtWith} = project
+  let { title, description, imgSrc, url, repo, builtWith } = project
   let { data } = useSWR(`/api/github?repo=${repo}`, fetcher)
   let repository: GithubRepository = data?.repository
-  let href = repository?.url || url 
+  let href = repository?.url || url
 
   return (
     <div className="md p-4 md:w-1/2" style={{ maxWidth: '544px' }}>
@@ -39,38 +39,38 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <div className="max-w-none space-y-2 text-gray-500 dark:text-gray-400">
               <p>{repository?.description || description}</p>
               <div className="flex flex-wrap space-x-1.5">
-              {builtWith && builtWith.length > 0 && (
-                <div className="flex flex-wrap space-x-1.5">
-                  <span className="shrink-1">{t('projects.built_with')}:</span>
-                  {builtWith.map((tool, index) => (
-                    <span key={index} className="font-semibold text-gray-600 dark:text-gray-300">
-                      {tool}
-                      {index !== builtWith.length - 1 && ','}
-                    </span>
-                  ))}
-                </div>
-              )}
+                {builtWith && builtWith.length > 0 && (
+                  <div className="flex flex-wrap space-x-1.5">
+                    <span className="shrink-1">{t('projects.built_with')}:</span>
+                    {builtWith.map((tool, index) => (
+                      <span key={index} className="font-semibold text-gray-600 dark:text-gray-300">
+                        {tool}
+                        {index !== builtWith.length - 1 && ','}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-                  {(repo || url) && (
-                    <div className="flex justify-end space-x-4">
-                      {repo  && (
-                        <div className="text-base font-medium leading-6">
-                          <a href={`https://github.com/${repo}`}>
-                            <FaGithub className="text-4xl" />
-                          </a>
-                        </div>
-                      )}
-                      {url && (
-                        <div className="text-base font-medium leading-6">
-                          <a href={url}>
-                            <FaExternalLinkAlt className="text-4xl" />
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
+          {(repo || url) && (
+            <div className="flex justify-end space-x-4">
+              {repo && (
+                <div className="text-base font-medium leading-6">
+                  <a href={`https://github.com/${repo}`} target="_blank" rel="noopener noreferrer">
+                    <FaGithub className="text-4xl" />
+                  </a>
+                </div>
+              )}
+              {url && (
+                <div className="text-base font-medium leading-6">
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    <FaExternalLinkAlt className="text-4xl" />
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

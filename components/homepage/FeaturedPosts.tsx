@@ -33,7 +33,8 @@ export function FeaturedPosts({ posts }: { posts: BlogFrontMatter[] }) {
                       <time dateTime={date}>{formatDate(date, lang)}</time>
                     </dd>
                   </h2>
-                  <BlogTags tags={tags} />
+                  {/* automatically false cause we are only showing the ones that dont have writing_type as lab */}
+                  <BlogTags tags={tags} is_lab={writing_type === "lab"} /> 
                   <div className="prose max-w-none text-gray-500 dark:text-gray-400">{summary}</div>
                   <div className="text-base font-medium leading-6">
                     <Link

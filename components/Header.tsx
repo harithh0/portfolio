@@ -3,7 +3,6 @@ import { useTranslation } from 'next-i18next';
 import NextImage from 'next/image';
 import { useRouter } from 'next/router';
 import { headerNavLinks } from '~/data/headerNavLinks';
-import { AnalyticsLink } from './AnalyticsLink';
 import { Link } from './Link';
 import { MobileNavToggle } from './MobileNavToggle';
 import { ThemeSwitcher } from './ThemeSwitcher';

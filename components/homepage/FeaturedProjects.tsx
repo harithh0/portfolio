@@ -68,7 +68,7 @@ export function FeaturedProjects() {
                     )}
                     {url && (
                       <div className="text-base font-medium leading-6 flex items-center">
-                        <a href={url} className="flex items-center" target="_blank" rel="noopener noreferrer">
+                        <a href={url} className="flex items-center">
                           <span className="mr-2">View</span>
                           <FaExternalLinkAlt className="text-4xl" />
                         </a>

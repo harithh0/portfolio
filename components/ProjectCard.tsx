@@ -64,7 +64,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               )}
               {url && (
                 <div className="text-base font-medium leading-6">
-                  <a href={url} target="_blank" rel="noopener noreferrer">
+                  <a href={url} >
                     <FaExternalLinkAlt className="text-4xl" />
                   </a>
                 </div>

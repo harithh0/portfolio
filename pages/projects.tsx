@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { PageSeo } from 'components/SEO'
 import { useTranslation } from 'next-i18next'
@@ -43,21 +44,31 @@ export default function Projects({ projectsData }: { projectsData: Project[] }) 
           </p>
         </div>
         <div className="container py-12">
-          <div className="flex justify-center mb-8">
-            <button
-              className={`px-4 py-2 mr-4 ${selectedCategory === 'software' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded`}
-              onClick={() => setSelectedCategory('software')}
-            >
-              {t('projects.work_title')}
-            </button>
-            <button
-              className={`px-4 py-2 ${selectedCategory === 'cyber' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded`}
-              onClick={() => setSelectedCategory('cyber')}
-            >
-              {t('projects.side_title')}
-            </button>
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
+            <div className="flex space-x-8">
+              <button
+                className={`pb-2 text-lg font-semibold ${selectedCategory === 'software'
+                  ? 'border-b-2 border-blue-500 text-blue-500'
+                  : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white'
+                  }`}
+                onClick={() => setSelectedCategory('software')}
+              >
+                {t('projects.work_title')}
+              </button>
+              <button
+                className={`pb-2 text-lg font-semibold ${selectedCategory === 'cyber'
+                  ? 'border-b-2 border-blue-500 text-blue-500'
+                  : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white'
+                  }`}
+                onClick={() => setSelectedCategory('cyber')}
+              >
+                {t('projects.side_title')}
+              </button>
+            </div>
           </div>
 
+          {/* Category Title */}
           {selectedCategory === 'software' && (
             <h3 className="mb-4 text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100">
               {t('projects.work_title')}
@@ -69,10 +80,10 @@ export default function Projects({ projectsData }: { projectsData: Project[] }) 
             </h3>
           )}
 
+          {/* Project Cards */}
           <div className="-m-4 flex flex-wrap">
             {(selectedCategory === 'software' ? SoftwareProjects : CybersecurityProjects).map((project) => (
               <ProjectCard key={project.title} project={project} />
-
             ))}
           </div>
         </div>

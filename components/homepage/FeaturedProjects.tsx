@@ -7,7 +7,7 @@ import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa'
 export function FeaturedProjects() {
   let { t, i18n } = useTranslation()
   let lang = i18n.language
-  const MAX = 5
+  const MAX = 6
 
   return (
     <div className="border-t border-gray-200 dark:border-gray-700">

@@ -16,8 +16,8 @@ function Giscus({ config }: GiscusProps) {
     script.src = 'https://giscus.app/client.js'
     script.setAttribute('data-repo', 'harithh0/portfolio'); // Replace with your repo
     script.setAttribute('data-repo-id', 'R_kgDOMcUxPg'); // Replace with your repo ID
-    script.setAttribute('data-category', '[ENTER CATEGORY NAME HERE]'); // Replace with your category
-    script.setAttribute('data-category-id', '[ENTER CATEGORY ID HERE]'); // Replace with your category ID
+    script.setAttribute('data-category', 'General'); // Replace with your category
+    script.setAttribute('data-category-id', 'DIC_kwDOMcUxPs4ChPop'); // Replace with your category ID
     script.setAttribute('data-mapping', 'og:title');
     script.setAttribute('data-strict', '0');
     script.setAttribute('data-reactions-enabled', '1');
@@ -28,7 +28,7 @@ function Giscus({ config }: GiscusProps) {
     script.crossOrigin = 'anonymous';
     script.async = true
 
-    
+
 
     let commentsNode = document.getElementById(GISCUS_COMMENTS_ID)
     if (commentsNode) commentsNode.appendChild(script)

@@ -1,0 +1,162 @@
+---
+title: 'ARP Spoofing and Local Pharming: Capturing Router Logins'
+date: '2025-05-28'
+tags: ['ARP', 'Networking', "Security"]
+
+writing_type: blog
+draft: false
+summary: 'Creating a Active Directory enviornment and users to learn about AD and its uses'
+images: ['/static/images/blog-assests/arp-spoofing-local-pharming/base.png']
+authors: ['default']
+---
+
+
+import UnsplashPhotoInfo from './UnsplashPhotoInfo.tsx'
+
+<UnsplashPhotoInfo photoURL="https://www.insecure.in/images/cover/arp-spoofing.webp" author="insecure.in" />
+
+
+## Setup
+
+- Windows 10 - Target virtual machine
+- Kali Linux - Attack virtual machine
+    - Both are on bridge mode, so they have real IP addresses from my router (like 192.168.0.x).
+- Optional (but recommended):
+    - Isolated router & switch (can break and mess around with easily without messing up main network)
+
+## Step 1 - Recon
+
+Goal:
+
+- Find the IP address of the target machine and router
+
+1.  Using [arp-scan](https://www.kali.org/tools/arp-scan/#arp-scan) we are able to scan machines on the network we are connected to.
+    - `arp-scan` works by sending out `arp` requests to all IPs on the subnet ("Who has <ip>? Tell &lt;attack_machine_ip&gt;")</ip>
+    - You can actually see it via Wireshark if you are a device connected on the network:
+        - ![e8678bd731696cb170eef9a12b5b593c.png](/static/images/blog-assets/arp-spoofing-local-pharming/g6fcd5fc71e4541219a4f0d714a16113b)
+
+  
+<br/>
+
+![34519ec75e020e4ad065d202af7bb664.png](:/859c0034aa944073b0a13b78f3ae5615)
+
+> Here we have 3 machines that we can see that responded to the `arp` request
+> 
+> We can tell that `192.168.0.1` is the router as it points to a TP-Link device and the target machine for this scenario will be a Dell computer which will be `192.168.0.106`
+
+After identifying devices with `arp-scan`, we perform more targeted scans to confirm the OS and device type.
+
+- Running OS discovery via `namp`
+    - `nmap -O 192.168.0.106`
+    - Results:
+    - ![76fed8e6038e6dfc809a4cd38184374b.png](:/c8cb1af79046457ab670eb088ab6f48e)  
+        <br/>
+- Simply pinging the target IP to see if its a windows machine by its `TTL` response
+    - If the TTL is 128 then its probably a windows machine
+    - Results:
+    - ![1.png](:/d1482d14147b44adb024e0d899b8547a)
+
+So now we know that its a Dell Windows 10 machine.
+
+## Step 2 - Poisoning phase
+
+Goal:
+
+- Act like the TP-Link router and trick the target machine to login to the router login page and steal the password.
+
+Before we get started, let's see what the login page looks like on the target machine of the TP-Link router looks:  
+![2.png](:/edd6126bbe43411fbd381626b6a1500c)
+
+Now let's start acting like the router
+
+1.  We will use a tool `arpspoof` via the [dsniff library](https://www.kali.org/tools/dsniff/)
+    - `arpspoof` allows us to send fake arp requests to the target machine and the machine we are trying to mimic.
+2.  `arpspoof -i eth0 -t 192.168.0.106 192.168.0.1`
+    - Result:
+        - ![5.png](:/42f5e314c9d24df0bd86b6ae5bdba663)
+        - Our attack machine is sending out arp requests to the `192.168.0.106` telling it that `192.168.0.1` points to our MAC address
+        - When the target machine gets this request it will update its arp table to match the new information
+    - Here is arp table of the target machine <u>before</u> running the `arpspoof` command:
+        - ![3.png](:/ba2dc6634a9b43428304391737e4dd14)
+    - And here it is after:
+        
+        - ![4.png](:/105d6f6b82e64be89c66184c6861d99b)
+        
+        > We can see that the MAC address of the router has been changed to the MAC address of the attack machine
+        
+
+It's important to remember that on real-world networks, ARP spoofing can sometimes trigger detection systems, but in home networks, it's usually undetected.
+
+## Step 3 - Login Page and API
+
+Now that all traffic from target machine to the router is going to us, lets host a fake router login page to trick the target into logging in and stealing their password.
+
+We will be creating a very simple API in python using the [FastAPI library](https://fastapi.tiangolo.com/) that will accept a POST request from the login page and then save that password in a text file.  
+Then we will host this fake login page using nginx on port 80. So when the target machine visits the "routers" IP address it will be directed to this fake login page where anything they submit in the password field will be sent to our API endpoint and log their password.
+
+Before we do that though, we need our Kali machine to be able to accept requests coming to our MAC address but at a different IP address (`192.168.0.1`), because whenever we receive a packet, our operating system will look at the MAC header and the IP header to see if they match to our system. If they both don't it will drop the packet. Since when the target machine will go to `http://192.168.0.1` it will be directed to us but since we don't have the routers IP on our network card, Kali will drop the packet completely.
+
+**Fix:**  
+Add the IP address to our network interface: `ip addr add 192.168.0.1/24 dev eth0`
+
+Here is a small snippet of the python code:  
+![6.png](:/ea11bc6bd4f843ba9a803915f979c3ac)
+
+> We are able to do a post request via the `/cgi-bin/login` endpoint  
+> Then save the result to a text file
+
+For the web page, I will simply just ctrl+s on the legit login page of the router to make it more realistic. This will give me the full page plus its loaded assests in a folder.  
+I will create a JavaScript function inside the html page to simply send the password data to our API endpoint:  
+![7.png](:/51b9dba500a2479f8d5b5eeea644cee8)
+
+> The `192.168.0.1` address is actually pointing to our attack machine
+
+Next, we will setup nginx to host this login page  
+We also need to accept incoming packets with port 80 to forward them to our nginx service running port 80:
+
+- `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 80`
+    
+    > We are saying: ANY packet that hits port 80, redirect it to the local machine’s port 80 server.
+
+We also need to forward port 8000 to our fastapi:
+- `sudo iptables -t nat -A PREROUTING -p tcp --dport 8000 -j REDIRECT --to-port 8000`
+
+Now that when the target machine visits `http://192.168.0.1/` it will show our login page hosted in the attack machine!  
+![8.png](:/755d4531e98a46459b8013c542a063e4)
+
+> It's very similar to the real page shown at the start
+
+We can also see in the loaded html our custom function:  
+![9.png](/static/images/blog-assets/arp-spoofing-local-pharming/1b09b04d29874c87b7daf3b6d0a75a3c)
+
+> After submitting a password, the page will always display a login error, encouraging the user to retry multiple times  
+> This isn't always the best way to do it but for this simple example it will do just fine
+
+When the user submits a password, lets do `admin92!$$` and some other passwords:  
+![10.png](:/d68bd28edf9d4fd1b1570d9e1f2931e1)  
+Then when it hits our endpoint and saves it to a text file with the timestamp, IP (useful if multiple computers' are targeted), and user-agent.
+
+## Interesting Detail
+
+### Why we need to also add the IP of target machine
+
+After setting up spoofing and the web page, the victim going to the "poisoned IP" like for example the admin page of the router (if we are acting like the router), doing so will not automatically go straight to our web page that we are hosting. Why? Well this is because whenever we do an HTTP request for example to the poisoned IP (`192.168.0.1`), it will first:
+
+1.  The victim machine is sending HTTP request to poisoned IP
+    1.  It looks at the arp table and sees that that IP address belongs to the spoofed MAC
+    2.  Sends the packet with the IP address and the spoofed MAC
+2.  The attacker machine receives the HTTP request from the target machine
+    1.  The network card looks at the IP of the HTTP packet, showing that it's not the IP address of itself (packet shows that it's meant for `192.168.0.1`, but our (attack) machine is `192.168.0.103`) so the network card drops the packet.
+    2.  This is where `ip addr add 192.168.0.1/24 dev eth0` command comes in.
+        1.  Its an extra step when to do to be able to accept not only ICMP packets but other Layer 3 and above
+
+### Why ICMP “just works” but HTTP doesn’t
+
+- ICMP Echo (ping) is handled entirely in the kernel’s networking stack. As long as the ARP-poisoned frame reaches your NIC, you’ll see a ping at the raw‐socket level and can reply manually or with a simple script.
+- TCP (HTTP) connections, however, require an application (Nginx, FastAPI, etc.) to be listening on that exact IP:port. If the kernel doesn’t recognize the IP as local, it never hands the packet up to your server.
+
+## Conclusion
+
+In this blog, we explored the process of performing an ARP spoofing attack in a controlled environment, demonstrating how an attacker can intercept and manipulate network traffic by impersonating a router to capture login credentials through a fake login page. We highlighted the technical steps involved, including reconnaissance, poisoning the ARP cache, and hosting a deceptive web page using Nginx & FastAPI.
+
+This is just a simple example of what can be done with ARP spoofing—there's much more we can do, including advanced man-in-the-middle attacks, packet manipulation, and network sniffing. By understanding these concepts, we gain valuable insight into network vulnerabilities and the importance of securing communication channels to prevent such attacks in real-world scenarios.

@@ -6,7 +6,7 @@ tags: ['ARP', 'Networking', "Security"]
 writing_type: blog
 draft: false
 summary: 'Creating a Active Directory enviornment and users to learn about AD and its uses'
-images: ['/static/images/blog-assests/arp-spoofing-local-pharming/base.png']
+images: ['/static/images/blog-assests/arp-spoofing-local-pharming/base.webp']
 authors: ['default']
 ---
 
@@ -34,12 +34,12 @@ Goal:
 1.  Using [arp-scan](https://www.kali.org/tools/arp-scan/#arp-scan) we are able to scan machines on the network we are connected to.
     - `arp-scan` works by sending out `arp` requests to all IPs on the subnet ("Who has <ip>? Tell &lt;attack_machine_ip&gt;")</ip>
     - You can actually see it via Wireshark if you are a device connected on the network:
-        - [e8678bd731696cb170eef9a12b5b593c.png](/static/images/blog-assets/arp-spoofing-local-pharming/e8678bd731696cb170eef9a12b5b593c.png)
+        - ![e8678bd731696cb170eef9a12b5b593c.png](/static/images/blog-assets/arp-spoofing-local-pharming/e8678bd731696cb170eef9a12b5b593c.png)
 
   
 <br/>
 
-[34519ec75e020e4ad065d202af7bb664.png](/static/images/blog-assets/arp-spoofing-local-pharming/34519ec75e020e4ad065d202af7bb664.png)
+![34519ec75e020e4ad065d202af7bb664.png](/static/images/blog-assets/arp-spoofing-local-pharming/34519ec75e020e4ad065d202af7bb664.png)
 
 > Here we have 3 machines that we can see that responded to the `arp` request
 > 
@@ -50,12 +50,12 @@ After identifying devices with `arp-scan`, we perform more targeted scans to con
 - Running OS discovery via `namp`
     - `nmap -O 192.168.0.106`
     - Results:
-    - [76fed8e6038e6dfc809a4cd38184374b.png](/static/images/blog-assets/arp-spoofing-local-pharming/76fed8e6038e6dfc809a4cd38184374b.png)  
+    - ![76fed8e6038e6dfc809a4cd38184374b.png](/static/images/blog-assets/arp-spoofing-local-pharming/76fed8e6038e6dfc809a4cd38184374b.png)  
         <br/>
 - Simply pinging the target IP to see if its a windows machine by its `TTL` response
     - If the TTL is 128 then its probably a windows machine
     - Results:
-    - [1.png](/static/images/blog-assets/arp-spoofing-local-pharming/1.png)
+    - ![1.png](/static/images/blog-assets/arp-spoofing-local-pharming/1.png)
 
 So now we know that its a Dell Windows 10 machine.
 
@@ -66,7 +66,7 @@ Goal:
 - Act like the TP-Link router and trick the target machine to login to the router login page and steal the password.
 
 Before we get started, let's see what the login page looks like on the target machine of the TP-Link router looks:  
-[2.png](/static/images/blog-assets/arp-spoofing-local-pharming/2.png)
+![2.png](/static/images/blog-assets/arp-spoofing-local-pharming/2.png)
 
 Now let's start acting like the router
 
@@ -74,14 +74,14 @@ Now let's start acting like the router
     - `arpspoof` allows us to send fake arp requests to the target machine and the machine we are trying to mimic.
 2.  `arpspoof -i eth0 -t 192.168.0.106 192.168.0.1`
     - Result:
-        - [5.png](/static/images/blog-assets/arp-spoofing-local-pharming/5.png)
+        - ![5.png](/static/images/blog-assets/arp-spoofing-local-pharming/5.png)
         - Our attack machine is sending out arp requests to the `192.168.0.106` telling it that `192.168.0.1` points to our MAC address
         - When the target machine gets this request it will update its arp table to match the new information
     - Here is arp table of the target machine <u>before</u> running the `arpspoof` command:
-        - [3.png](/static/images/blog-assets/arp-spoofing-local-pharming/3.png)
+        - ![3.png](/static/images/blog-assets/arp-spoofing-local-pharming/3.png)
     - And here it is after:
         
-        - [4.png](/static/images/blog-assets/arp-spoofing-local-pharming/4.png)
+        - ![4.png](/static/images/blog-assets/arp-spoofing-local-pharming/4.png)
         
         > We can see that the MAC address of the router has been changed to the MAC address of the attack machine
         
@@ -101,14 +101,14 @@ Before we do that though, we need our Kali machine to be able to accept requests
 Add the IP address to our network interface: `ip addr add 192.168.0.1/24 dev eth0`
 
 Here is a small snippet of the python code:  
-[6.png](/static/images/blog-assets/arp-spoofing-local-pharming/6.png)
+![6.png](/static/images/blog-assets/arp-spoofing-local-pharming/6.png)
 
 > We are able to do a post request via the `/cgi-bin/login` endpoint  
 > Then save the result to a text file
 
 For the web page, I will simply just ctrl+s on the legit login page of the router to make it more realistic. This will give me the full page plus its loaded assests in a folder.  
 I will create a JavaScript function inside the html page to simply send the password data to our API endpoint:  
-[7.png](/static/images/blog-assets/arp-spoofing-local-pharming/7.png)
+![7.png](/static/images/blog-assets/arp-spoofing-local-pharming/7.png)
 
 > The `192.168.0.1` address is actually pointing to our attack machine
 
@@ -123,18 +123,18 @@ We also need to forward port 8000 to our fastapi:
 - `sudo iptables -t nat -A PREROUTING -p tcp --dport 8000 -j REDIRECT --to-port 8000`
 
 Now that when the target machine visits `http://192.168.0.1/` it will show our login page hosted in the attack machine!  
-[8.png](/static/images/blog-assets/arp-spoofing-local-pharming/8.png)
+![8.png](/static/images/blog-assets/arp-spoofing-local-pharming/8.png)
 
 > It's very similar to the real page shown at the start
 
 We can also see in the loaded html our custom function:  
-[9.png](/static/images/blog-assets/arp-spoofing-local-pharming/9.png)
+![9.png](/static/images/blog-assets/arp-spoofing-local-pharming/9.png)
 
 > After submitting a password, the page will always display a login error, encouraging the user to retry multiple times  
 > This isn't always the best way to do it but for this simple example it will do just fine
 
 When the user submits a password, lets do `admin92!$$` and some other passwords:  
-[10.png](/static/images/blog-assets/arp-spoofing-local-pharming/10.png)  
+![10.png](/static/images/blog-assets/arp-spoofing-local-pharming/10.png)  
 Then when it hits our endpoint and saves it to a text file with the timestamp, IP (useful if multiple computers' are targeted), and user-agent.
 
 ## Interesting Detail

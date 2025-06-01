@@ -56,5 +56,16 @@ export let projectsData: Project[] = [
     featured: true,
     builtWith: ["Python"]
   },
+
+  // for both lab + blog
+  {
+    type: 'cyber',
+    title: 'Using ARP Poisoning to Fake Router Interfaces and Steal Login Credentials',
+    description: 'Using arp-scan and arpspoof to manipulate ARP requests',
+    imgSrc: '/static/images/blog-assets/arp-spoofing-local-pharming/base.webp',
+    url: '/blog/ad-spoofinng-local-pharminng/',
+    featured: true
+  },
 ]
+
 

@@ -11,14 +11,14 @@ import type { PostSimpleLayoutProps } from '~/types/layout'
 
 function PostSimple(props: PostSimpleLayoutProps) {
   let { frontMatter, type, children, authorDetails, commentConfig } = props
-  let { date, title, slug, fileName, tags, readingTime, images, writing_type} = frontMatter
+  let { date, title, slug, fileName, tags, readingTime, images, writing_type } = frontMatter
   let postUrl = `${siteMetadata.siteUrl}/${type}/${slug}`
   let is_lab = writing_type === "lab"
 
 
 
   return (
-    
+
     <SectionContainer>
       <BlogSeo
         url={`${siteMetadata.siteUrl}/${type}/${slug}`}

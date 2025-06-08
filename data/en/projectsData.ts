@@ -20,7 +20,14 @@ export let projectsData: Project[] = [
     featured: true,
     builtWith: ["Python-Django REST API", "MySQL", "React Native", "Expo"]
   },
-
+  {
+    type: 'software',
+    title: 'AI Gmail Phishing Detector',
+    description: 'Using Python and Hugging Face Transformers to automatically detect and flag phishing emails in real-time',
+    imgSrc: '/static/images/AI_Phish.webp',
+    repo: "harithh0/Phishing-Gmail-Detector",
+    featured: true
+  },
   {
     type: 'cyber',
     title: 'Active Directory Homelab',

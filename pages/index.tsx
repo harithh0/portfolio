@@ -27,6 +27,7 @@ export default function Home({ posts }) {
   let { t } = useTranslation('common')
 
   return (
+
     <>
       <PageSeo title={t('site_meta_data.title')} description={t('site_meta_data.description')} />
       <div className="mt-8 divide-y divide-gray-200 dark:divide-gray-700 md:mt-16">

@@ -108,9 +108,8 @@ export function BlogSeo(props: BlogSeoProps) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData, null, 2) }}
         />
-      <script defer src="https://cloud.umami.is/script.js" data-website-id="f677dc69-42e6-4f98-ad8d-cd90bbcd27f4"></script>
-      <link href="http://necolas.github.io/normalize.css/3.0.2/normalize.css" rel='stylesheet'/>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+        <link href="http://necolas.github.io/normalize.css/3.0.2/normalize.css" rel='stylesheet' />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
 
       </Head>
     </>

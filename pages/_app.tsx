@@ -13,6 +13,7 @@ function App({ Component, pageProps }) {
     // @ts-ignore
     <ThemeProvider attribute="class">
       <Head>
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="f677dc69-42e6-4f98-ad8d-cd90bbcd27f4"></script>
         <meta content="width=device-width, initial-scale=1" name="viewport" />
       </Head>
       <LayoutWrapper>

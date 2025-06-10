@@ -70,7 +70,7 @@ export let projectsData: Project[] = [
     title: 'Using ARP Poisoning to Fake Router Interfaces and Steal Login Credentials',
     description: 'Using arp-scan and arpspoof to manipulate ARP requests',
     imgSrc: '/static/images/blog-assets/arp-spoofing-local-pharming/base.webp',
-    url: '/blog/ad-spoofinng-local-pharminng/',
+    url: '/blog/arp-spoofing-local-pharming/',
     featured: true
   },
 ]

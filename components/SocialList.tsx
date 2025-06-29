@@ -13,7 +13,7 @@ export const socialLinks = [
   },
   {
     friendlyName: 'Email',
-    link: 'mailto:me@harithh.site',
+    link: 'mailto:me@harithh.com',
     icon: <FaEnvelope className="text-2xl" />,
   },
 ]
